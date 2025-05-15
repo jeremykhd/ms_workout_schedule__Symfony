@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  ###############################
+  # 🧭 TRAEFIK (Gateway HTTP)
+  ###############################
+  traefik:
+    image: traefik:v2.9
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    ports:
+      - "9000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - gateway
+
+  ###############################
+  # 🐰 RabbitMQ
+  ###############################
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"     # AMQP pour les services
+      - "15672:15672"   # Interface d'admin
+    environment:
+      - RABBITMQ_DEFAULT_USER: guest
+      - RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - gateway
+    
+  ###############################
+  # 👤 User Service
+  ###############################
+  users-service:
+    build: ../users
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`api/users`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=8000"
+    environment:
+      - MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f
+    depends_on:
+      - rabbitmq
+    networks:
+      - gateway
+  ###############################
+  # Workout Service
+  ###############################
+  workout-service:
+    build: ../workout
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/api/workout`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=8000"
+    environment:
+      - MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f
+    depends_on:
+      - rabbitmq
+    networks:
+      - gateway
+
+networks:
+  gateway:
+    driver: bridge
