@@ -1,0 +1,45 @@
+# Symfony
+/var/
+/vendor/
+.env.local
+.env.*.local
+.phpunit
+.phpunit.result.cache
+
+# IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build
+/build/
+/dist/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Environment
+.env
+.env.local
+.env.*.local 
