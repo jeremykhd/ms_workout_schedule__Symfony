@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping>
+    <entity name="App\Core\Domain\Entity\Exercice" table="app_exercice" repository-class="App\Core\Infrastrure\Repository\ExerciceRepository">
+        <id name="id" type="integer" column="id" length="36">
+            <generator strategy="IDENTITY"/>
+        </id>
+        <field name="title" type="string" column="title" length="180"></field>
+        <field name="description" type="text" column="description"></field>
+    </entity>
+</doctrine-mapping>
